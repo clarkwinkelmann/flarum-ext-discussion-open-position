@@ -1,8 +1,6 @@
 # Discussion Open Position
 
-[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/clarkwinkelmann/flarum-ext-discussion-open-position/blob/master/LICENSE.txt) [![Latest Stable Version](https://img.shields.io/packagist/v/clarkwinkelmann/flarum-ext-discussion-open-position.svg)](https://packagist.org/packages/clarkwinkelmann/flarum-ext-discussion-open-position) [![Total Downloads](https://img.shields.io/packagist/dt/clarkwinkelmann/flarum-ext-discussion-open-position.svg)](https://packagist.org/packages/clarkwinkelmann/flarum-ext-discussion-open-position) [![Donate](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.me/clarkwinkelmann)
-
-This extension allows users to create discussions and replies without revealing their usernames except to moderators.
+[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/clarkwinkelmann/flarum-ext-discussion-open-position/blob/main/LICENSE.txt) [![Latest Stable Version](https://img.shields.io/packagist/v/clarkwinkelmann/flarum-ext-discussion-open-position.svg)](https://packagist.org/packages/clarkwinkelmann/flarum-ext-discussion-open-position) [![Total Downloads](https://img.shields.io/packagist/dt/clarkwinkelmann/flarum-ext-discussion-open-position.svg)](https://packagist.org/packages/clarkwinkelmann/flarum-ext-discussion-open-position) [![Donate](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.me/clarkwinkelmann)
 
 This extension controls the position (scroll/"page") at which a discussion is opened when selected in the discussion list.
 
@@ -33,7 +31,10 @@ You can [contact me](https://clarkwinkelmann.com/flarum) to sponsor additional f
 
 Support is offered on a "best effort" basis through the Flarum community thread.
 
+**Sponsors**: puppydreamwork
+
 ## Links
 
 - [GitHub](https://github.com/clarkwinkelmann/flarum-ext-discussion-open-position)
 - [Packagist](https://packagist.org/packages/clarkwinkelmann/flarum-ext-discussion-open-position)
+- [Discuss](https://discuss.flarum.org/d/31153)

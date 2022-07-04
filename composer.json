@@ -20,7 +20,8 @@
         }
     ],
     "support": {
-        "source": "https://github.com/clarkwinkelmann/flarum-ext-discussion-open-position"
+        "source": "https://github.com/clarkwinkelmann/flarum-ext-discussion-open-position",
+        "forum": "https://discuss.flarum.org/d/31153"
     },
     "extra": {
         "flarum-extension": {
