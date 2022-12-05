@@ -11,7 +11,8 @@ import Discussion from 'flarum/common/models/Discussion';
 import DiscussionListItem from 'flarum/forum/components/DiscussionListItem';
 import DiscussionPage from 'flarum/forum/components/DiscussionPage';
 import SettingsPage from 'flarum/forum/components/SettingsPage';
-import AlertWithDismissCallback from './components/AlertWithDismissCallback';
+import AlertWithDismissCallback, {AlertWithDismissCallbackAttrs} from './components/AlertWithDismissCallback';
+import shouldRedirectDiscussionToBlog from './utils/shouldRedirectDiscussionToBlog';
 
 function getOpenLastReadPreference() {
     // Retrieve the user preference or the default
@@ -23,7 +24,6 @@ app.initializers.add('discussion-open-position', () => {
     extend(DiscussionListItem.prototype, 'view', function (vdom) {
         // If we are on a search results page, there's special logic to open the most relevant post
         // We don't want to change that
-        // @ts-ignore
         if (this.attrs.params.q) {
             return;
         }
@@ -35,15 +35,14 @@ app.initializers.add('discussion-open-position', () => {
             return;
         }
 
-        // @ts-ignore
-        const discussion = this.attrs.discussion as Discussion;
+        const discussion: Discussion = this.attrs.discussion;
 
-        vdom.children.forEach(vdom => {
+        (vdom.children as any[]).forEach(vdom => {
             if (!vdom || !vdom.attrs || !vdom.attrs.className || vdom.attrs.className.indexOf('DiscussionListItem-content') === -1) {
                 return;
             }
 
-            vdom.children.forEach(vdom => {
+            (vdom.children as any[]).forEach(vdom => {
                 if (!vdom || vdom.tag !== Link) {
                     return;
                 }
@@ -52,10 +51,30 @@ app.initializers.add('discussion-open-position', () => {
 
                 if (openLast === 'unread' && discussion.isUnread()) {
                     // Same logic as in DiscussionListItem to calculate open location
-                    jumpTo = Math.min(discussion.lastPostNumber(), (discussion.lastReadPostNumber() || 0) + 1);
+                    jumpTo = Math.min(discussion.lastPostNumber() || 0, (discussion.lastReadPostNumber() || 0) + 1);
                 }
 
-                vdom.attrs.href = app.route.discussion(discussion, jumpTo);
+                let href: string;
+
+                // v17development/flarum-blog overrides the app.route.discussion method and does its own "near" calculation inside
+                // The easiest solution to ignore that custom calculation is to generate our own blog link here with the intended value
+                // Same logic as Blog to determinate when the discussion link should be replaced with a blog link
+                if (shouldRedirectDiscussionToBlog(discussion)) {
+                    if (jumpTo > 1) {
+                        href = app.route('blogArticle.near', {
+                            id: discussion.slug(),
+                            near: jumpTo,
+                        });
+                    } else {
+                        href = app.route('blogArticle', {
+                            id: discussion.slug(),
+                        });
+                    }
+                } else {
+                    href = app.route.discussion(discussion, jumpTo);
+                }
+
+                vdom.attrs.href = href;
             });
         });
     });
@@ -108,14 +127,15 @@ app.initializers.add('discussion-open-position', () => {
             }, app.translator.trans('clarkwinkelmann-discussion-open-position.forum.firstTimePrompt.more'))
         ];
 
-        const alertId = app.alerts.show(AlertWithDismissCallback, {
+        // For some reason typescript type-hints from Flarum don't accept extended Alerts or Alert attrs
+        const alertId = app.alerts.show(AlertWithDismissCallback as any, {
             type: 'info',
             controls,
             ondismiss2: () => {
                 // Save the default as preference so the alert isn't shown again
                 app.session.user!.savePreferences({discussionOpenLastRead: defaultOpenLast});
             },
-        }, app.translator.trans('clarkwinkelmann-discussion-open-position.forum.firstTimePrompt.from' + (defaultOpenLast === 'always' ? 'Always' : 'Never')));
+        } as AlertWithDismissCallbackAttrs, app.translator.trans('clarkwinkelmann-discussion-open-position.forum.firstTimePrompt.from' + (defaultOpenLast === 'always' ? 'Always' : 'Never')));
     });
 
     extend(SettingsPage.prototype, 'settingsItems', function (items) {
@@ -135,10 +155,10 @@ app.initializers.add('discussion-open-position', () => {
                             never: app.translator.trans('clarkwinkelmann-discussion-open-position.forum.preferences.openLastOptions.never'),
                         },
                         value: openLast,
-                        onchange: (value) => {
+                        onchange: (value: string) => {
                             this.discussionOpenLastReadLoading = 'saving';
 
-                            this.user.savePreferences({discussionOpenLastRead: value}).then(() => {
+                            this.user!.savePreferences({discussionOpenLastRead: value}).then(() => {
                                 this.discussionOpenLastReadLoading = 'saved';
                                 m.redraw();
 
